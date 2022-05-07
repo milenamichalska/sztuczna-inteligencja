@@ -1,2 +1,2 @@
 # sztuczna-inteligencja
-Sztuczna inteligencja laboratoria ZUT 2020
+Sztuczna inteligencja laboratoria ZUT 2022

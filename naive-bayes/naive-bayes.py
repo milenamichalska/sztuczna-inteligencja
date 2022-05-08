@@ -45,9 +45,13 @@ class NaiveBayesClassifier(BaseEstimator, ClassifierMixin):
                     #Calculated for every feature, for every value, for every class
                     class_value_occ = 0
                     for i, row in enumerate(X):
-                        if (row[f] == v and y[i] == c):
+                        if (row[f] == v and y[i][0] == c):
                             class_value_occ += 1
-                    classes_row.append(class_value_occ/len(y))
+                    # print(class_value_occ)
+                    prob = class_value_occ/len(y)
+                    if (self.laplacian_smoothing and self.n_bins):
+                        prob = (class_value_occ + 1)/(len(y) + self.n_bins)
+                    classes_row.append(prob)
                 value_row.append(classes_row)
             likelihood.append(value_row)
 
@@ -79,12 +83,14 @@ class NaiveBayesClassifier(BaseEstimator, ClassifierMixin):
                     res *= self.classes_priori[c] * self.features_likelihood[f][int(X[row][f])][c]
                 class_prob.append(res)
             results.append(class_prob)
+        # print(results)
         
+        assigned_class = []
         for r in results:
             max = np.argmax(r)
-            r = np.where(r == max)
+            assigned_class.append(max)
 
-        return results
+        return np.array(assigned_class)
 
     def predict_proba(self, X):
         # Check is fit had been called
@@ -107,10 +113,18 @@ class NaiveBayesClassifier(BaseEstimator, ClassifierMixin):
                 class_prob.append(res)
             results.append(class_prob)
 
-        return results
+        return np.array(results)
+
+# find accuracy
+def find_accuracy(result, y):
+    correct_counter = 0
+    for i, r in enumerate(result):
+        if (r == int(y[i][0])):
+            correct_counter += 1
+    return correct_counter / len(result)
 
 # config
-n_bins = 10 # number of bins to discretize data
+n_bins = 2 # number of bins to discretize data
 
 # data loading
 data = np.genfromtxt('/home/milena/projects/studia/sztuczna-inteligencja/naive-bayes/wine.data', delimiter=",")
@@ -124,8 +138,24 @@ y = data[:,:1]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
 # use classifier
-est = NaiveBayesClassifier(n_bins)
+est = NaiveBayesClassifier(n_bins, laplacian_smoothing=True)
 est = est.fit(X_train, y_train)
 prediction = est.predict(X_test)
 print(prediction)
 prediction_proba = est.predict_proba(X_test)
+# print(prediction_proba)
+
+print(find_accuracy(prediction, y_test))
+
+# divorce data
+data = np.genfromtxt('/home/milena/projects/studia/sztuczna-inteligencja/naive-bayes/divorce.csv', delimiter=";")
+data = data[1:]
+print(data.shape)
+X = data[:,:-1]
+y = data[:,-1:]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+est = NaiveBayesClassifier(n_bins, laplacian_smoothing=True)
+est = est.fit(X_train, y_train)
+prediction = est.predict(X_test)
+print(prediction)
+print(find_accuracy(prediction, y_test))

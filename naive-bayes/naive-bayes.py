@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
-from sklearn.metrics import euclidean_distances
 from sklearn.preprocessing import KBinsDiscretizer
 from sklearn.model_selection import train_test_split
 
@@ -11,6 +10,7 @@ from sklearn.model_selection import train_test_split
 class NaiveBayesClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, n_bins = None, laplacian_smoothing = False):
         self.laplacian_smoothing = laplacian_smoothing
+        #TODO: Discretize data before feeding it to classifier
         self.n_bins = n_bins
 
     def fit(self, X, y):
@@ -124,7 +124,7 @@ def find_accuracy(result, y):
     return correct_counter / len(result)
 
 # config
-n_bins = 2 # number of bins to discretize data
+n_bins = 10 # number of bins to discretize data
 
 # data loading
 data = np.genfromtxt('/home/milena/projects/studia/sztuczna-inteligencja/naive-bayes/wine.data', delimiter=",")

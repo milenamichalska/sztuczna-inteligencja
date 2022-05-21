@@ -10,7 +10,7 @@ learning_rate = 0.5
 # generate artificial data
 X1, Y1 = make_classification(n_features=2, n_redundant=0, n_informative=2, n_clusters_per_class=1, n_classes=2, n_samples=m, class_sep=2)
 plt.scatter(X1[:, 0], X1[:,1], marker='x', c=Y1, s=25, edgecolor='k')
-# plt.show()
+plt.show()
 
 X_train = np.hstack((X1, np.ones((X1.shape[0], 1), dtype=X1.dtype)))
 Y_train = Y1
@@ -50,13 +50,47 @@ class PerceptronClassifier(BaseEstimator, ClassifierMixin):
                     self.weights[j] = self.weights[j] + (self.lr * errors[index] * X[index][j])
             self.k += 1
 
-        print(self.k)
-        print(self.weights)
+        # print(self.k)
+        # print(self.weights)
 
         return self
+
+    def get_k(self):
+        return self.k
 
     def predict(self, X):
         pass
 
-est = PerceptronClassifier(learning_rate)
-est = est.fit(X_train, Y_train)
+# est = PerceptronClassifier(learning_rate)
+# est = est.fit(X_train, Y_train)
+
+# test diffrent learning rates
+lrs = np.arange(0.1, 1, 0.01)
+lr_k = []
+
+for lr in lrs:
+    est = PerceptronClassifier(lr)
+    est = est.fit(X_train, Y_train)
+    lr_k.append(est.get_k())
+
+plt.plot(lrs, lr_k)
+plt.title("Step counter dependent on learning rate")
+plt.show()
+
+# test diffrent m-sizes
+ms = np.arange(10, 1000, 10)
+m_k = []
+
+for m in ms:
+    X1, Y1 = make_classification(n_features=2, n_redundant=0, n_informative=2, n_clusters_per_class=1, n_classes=2, n_samples=m, class_sep=2)
+    X_train = np.hstack((X1, np.ones((X1.shape[0], 1), dtype=X1.dtype)))
+    Y_train = Y1
+
+    est = PerceptronClassifier(0.5)
+    est = est.fit(X_train, Y_train)
+    m_k.append(est.get_k())
+    
+plt.yscale("log")
+plt.plot(ms, m_k)
+plt.title("Step counter dependent on sample size")
+plt.show()

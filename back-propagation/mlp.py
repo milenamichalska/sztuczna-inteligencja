@@ -28,7 +28,12 @@ class MLPClassifier(BaseEstimator, ClassifierMixin):
 
     def _forward(self, X):
         hidden_sum = np.dot(self.w_h, X) + self.b_h
-        hidden_output = self._sigmoid(hidden_sum)
+
+        hidden_output = []
+        for n in hidden_sum:
+            hidden_output.append(self._sigmoid(n))
+
+        
 
     def _compute_cost(self, y, out):
         pass

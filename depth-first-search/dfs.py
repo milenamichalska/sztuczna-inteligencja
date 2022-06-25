@@ -28,16 +28,12 @@ class NQueens():
         states = self._generate_children_states([])
         search_counter = 1
         while(len(states) > 0):
-            # print(states[-1])
+            # print(states[state_i])
             search_counter += 1
-            if (self._conditions_met(states[-1])):
-                return [states[-1], search_counter]
+            if (self._conditions_met(states[0])):
+                return [states[0], search_counter]
             else:
-                children_states = self._generate_children_states(states[-1])
-                if (len(children_states[0]) > 4):
-                    states = states[:-1]
-                else:
-                    states = states[:-1] + children_states
+                states = states[1:] + self._generate_children_states(states[0])
         print(self.queens_vector)
 
 n = 4

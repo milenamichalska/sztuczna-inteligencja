@@ -1,5 +1,6 @@
 import numpy as np
 import itertools
+import matplotlib.pyplot as plt
 
 class NQueens():
     def __init__(self, N):
@@ -15,7 +16,7 @@ class NQueens():
     def _conditions_met(self, state):
         conditions_met = True
 
-        if (len(state) < 4):
+        if (len(state) < self.N):
             conditions_met = False
 
         for x, y in itertools.combinations(enumerate(state), 2):
@@ -36,6 +37,18 @@ class NQueens():
                 states = states[1:] + self._generate_children_states(states[0])
         print(self.queens_vector)
 
-n = 4
-problem = NQueens(n)
-print(problem.solve())
+# n = 5
+# problem = NQueens(n)
+# print(problem.solve())
+
+ns = np.arange(4, 9, 1)
+state_counters = []
+
+for n in ns:
+    problem = NQueens(n)
+    _, c = problem.solve()
+    state_counters.append(c)
+
+plt.plot(ns, state_counters)
+plt.title("Checked states counter dependent on n size")
+plt.show()
